@@ -1,0 +1,15 @@
+{
+  "name": "pushbot-table-fetch",
+  "version": "1.0.0",
+  "description": "Populate a local PostgreSQL database with table contents from a remote one",
+  "main": "fetch.js",
+  "scripts": {
+    "start": "node fetch.js"
+  },
+  "author": "smashwilson@gmail.com",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^2.11.0",
+    "pg-promise": "^6.3.8"
+  }
+}
