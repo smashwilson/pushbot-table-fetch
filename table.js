@@ -18,6 +18,10 @@ class Table {
     return pg.helpers.insert(rows, this.columnSet)
   }
 
+  getSequenceStatement (count) {
+    return `ALTER SEQUENCE ${this.name}_id_seq RESTART WITH ${count}`
+  }
+
   truncate (db) {
     return db.none(`TRUNCATE TABLE ${this.name} CASCADE`)
   }
@@ -30,13 +34,18 @@ class Table {
     return db.none(this.getInsertStatement(rows))
   }
 
+  alterSequence (db, count) {
+    return db.none(this.getSequenceStatement(count))
+  }
+
   async move (fromDb, toDb) {
     console.log(`truncating destination table ${this.name}`)
     await this.truncate(toDb)
     console.log(`reading from source table`)
     const rows = await this.select(fromDb)
     console.log(`inserting ${rows.length} into destination table`)
-    return this.insert(toDb, rows)
+    await this.insert(toDb, rows)
+    return this.alterSequence(toDb, rows.length)
   }
 }
 
