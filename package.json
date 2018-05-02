@@ -3,9 +3,7 @@
   "version": "1.0.0",
   "description": "Populate a local PostgreSQL database with table contents from a remote one",
   "main": "fetch.js",
-  "scripts": {
-    "start": "node fetch.js"
-  },
+  "bin": "fetch.js",
   "author": "smashwilson@gmail.com",
   "license": "MIT",
   "dependencies": {
