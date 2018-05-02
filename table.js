@@ -1,13 +1,14 @@
 const pg = require('pg-promise')()
 
 class Table {
-  constructor (name, columns) {
+  constructor (name, columns, hasID) {
     this.name = name
-    this.columnNames = columns
+    this.columnNames = columns.map(c => c.name || c)
     this.columnSet = new pg.helpers.ColumnSet(
-      this.columnNames,
+      columns,
       {table: this.name}
     )
+    this.hasID = hasID
   }
 
   getSelectStatement () {
@@ -45,7 +46,9 @@ class Table {
     const rows = await this.select(fromDb)
     console.log(`inserting ${rows.length} into destination table`)
     await this.insert(toDb, rows)
-    return this.alterSequence(toDb, rows.length)
+    if (this.hasID) {
+      await this.alterSequence(toDb, rows.length)
+    }
   }
 }
 
@@ -53,12 +56,14 @@ class DocumentSetTables {
   constructor (name) {
     this.documentTable = new Table(
       `${name}_documents`,
-      ['id', 'created', 'updated', 'submitter', 'body']
+      ['id', 'created', 'updated', 'submitter', 'body'],
+      true
     )
 
     this.attributeTable = new Table(
       `${name}_attributes`,
-      ['id', 'document_id', 'kind', 'value']
+      ['id', 'document_id', 'kind', 'value'],
+      true
     )
   }
 
@@ -68,6 +73,9 @@ class DocumentSetTables {
   }
 }
 
+const brainTable = new Table('brain', ['key', 'type', {name: 'value', mod: ':json'}], false)
+
 module.exports = {
-  DocumentSetTables
+  DocumentSetTables,
+  brainTable
 }
