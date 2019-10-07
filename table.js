@@ -1,5 +1,7 @@
 const pg = require('pg-promise')()
 
+// wat
+
 class Table {
   constructor (name, columns) {
     this.name = name
